@@ -1,108 +1,108 @@
 <html>
 
-    <head>
-        <title>Audio Recorder</title>
+<head>
+    <title>Audio Recorder</title>
 
-    </head>
+</head>
 
-    <body>
-        <h1>Audio Recorder</h1>
-        <p>Vous pouvez laisser toutes les cases cochées</p>
-        <form
-            style="padding: 8px; border: solid 1px grey; border-radius: 8px; display:flex; gap: 8px; width: fit-content; flex-direction: column;">
-            <div>
-                <label for="autoGainControl">autoGainControl</label>
-                <input type="checkbox" id="autoGainControl" name="autoGainControl" value="autoGainControl" checked>
-            </div>
-            <div>
-                <label for="echoCancellation">echoCancellation</label>
-                <input type="checkbox" id="echoCancellation" name="echoCancellation" value="echoCancellation" checked>
-            </div>
+<body>
+    <h1>Audio Recorder</h1>
+    <p>Vous pouvez laisser toutes les cases cochées</p>
+    <form
+        style="padding: 8px; border: solid 1px grey; border-radius: 8px; display:flex; gap: 8px; width: fit-content; flex-direction: column;">
+        <div>
+            <label for="autoGainControl">autoGainControl</label>
+            <input type="checkbox" id="autoGainControl" name="autoGainControl" value="autoGainControl">
+        </div>
+        <div>
+            <label for="echoCancellation">echoCancellation</label>
+            <input type="checkbox" id="echoCancellation" name="echoCancellation" value="echoCancellation">
+        </div>
 
-            <div>
-                <label for="noiseSuppression">noiseSuppression</label>
-                <input type="checkbox" id="noiseSuppression" name="noiseSuppression" value="noiseSuppression" checked>
-            </div>
-            <div>
-                <label for="sampleRate">sampleRate</label>
-                <input type="number" id="sampleRate" name="sampleRate" value="16000">
-            </div>
+        <div>
+            <label for="noiseSuppression">noiseSuppression</label>
+            <input type="checkbox" id="noiseSuppression" name="noiseSuppression" value="noiseSuppression">
+        </div>
+        <div>
+            <label for="sampleRate">sampleRate</label>
+            <input type="number" id="sampleRate" name="sampleRate" value="16000">
+        </div>
 
-            <div>
-                <label for="suppressLocalAudioPlayback">suppressLocalAudioPlayback</label>
-                <input type="checkbox" id="suppressLocalAudioPlayback" name="suppressLocalAudioPlayback"
-                    value="suppressLocalAudioPlayback" checked>
-            </div>
-        </form>
+        <div>
+            <label for="suppressLocalAudioPlayback">suppressLocalAudioPlayback</label>
+            <input type="checkbox" id="suppressLocalAudioPlayback" name="suppressLocalAudioPlayback"
+                value="suppressLocalAudioPlayback" checked>
+        </div>
+    </form>
 
-        <button id="start-button" onclick="startRecording()">Start</button>
-        <button id="stop-button" disabled="true" onclick="stopRecording()">Stop</button>
-        <br />
-        <audio id="audio" controls></audio>
-        <pre id="debug"></pre>
-        <pre id="debug-test"></pre>
-    </body>
+    <button id="start-button" onclick="startRecording()">Start</button>
+    <button id="stop-button" disabled="true" onclick="stopRecording()">Stop</button>
+    <br />
+    <audio id="audio" controls></audio>
+    <pre id="debug"></pre>
+    <pre id="debug-test"></pre>
+</body>
 
-    <script>
-        let stream;
-        let recorder;
-        let blob;
-        let chunks = [];
+<script>
+    let stream;
+    let recorder;
+    let blob;
+    let chunks = [];
 
-        const startButton = document.getElementById("start-button");
-        const stopButton = document.getElementById("stop-button");
+    const startButton = document.getElementById("start-button");
+    const stopButton = document.getElementById("stop-button");
 
-        async function startRecording() {
-            const config = {
-                audio: {
-                    autoGainControl: document.getElementById("autoGainControl").checked,
-                    echoCancellation: document.getElementById("echoCancellation").checked,
-                    noiseSuppression: document.getElementById("noiseSuppression").checked,
-                    sampleRate: document.getElementById("sampleRate").value,
-                    suppressLocalAudioPlayback: document.getElementById("suppressLocalAudioPlayback").checked
-                }
+    async function startRecording() {
+        const config = {
+            audio: {
+                autoGainControl: document.getElementById("autoGainControl").checked,
+                echoCancellation: document.getElementById("echoCancellation").checked,
+                noiseSuppression: document.getElementById("noiseSuppression").checked,
+                sampleRate: document.getElementById("sampleRate").value,
+                suppressLocalAudioPlayback: document.getElementById("suppressLocalAudioPlayback").checked
             }
-            document.getElementById('debug').innerHTML = JSON.stringify(config, null, 2);
-            stream = await navigator.mediaDevices.getUserMedia(config);
-            console.log("Recording started 2");
-            recorder = new MediaRecorder(stream);
-
-
-            recorder.ondataavailable = e => {console.log(e); chunks.push(e.data)}
-            recorder.start();
-            startButton.disabled = true;
-            stopButton.disabled = false;
         }
-
-        async function stopRecording() {
-            recorder.stop();
-            startButton.disabled = false;
-            stopButton.disabled = true;
-            stream.getTracks().forEach(track => track.stop());
-            console.log(chunks)
-            setTimeout(async () => {
-                blob = new Blob(chunks, {type: getAudioType()});
-                chunks = [];
-                const audio = document.querySelector('audio');
-
-                const base64StringObject = await blob.arrayBuffer();
-                const base64String = btoa(String.fromCharCode(...new Uint8Array(base64StringObject)));
+        document.getElementById('debug').innerHTML = JSON.stringify(config, null, 2);
+        stream = await navigator.mediaDevices.getUserMedia(config);
+        console.log("Recording started 2");
+        recorder = new MediaRecorder(stream);
 
 
-                audio.src = URL.createObjectURL(blob);
-                audio.load();
-                audio.play();
-                console.log("Recording stopped");
-            }, 1000)
-        }
+        recorder.ondataavailable = e => {console.log(e); chunks.push(e.data)}
+        recorder.start();
+        startButton.disabled = true;
+        stopButton.disabled = false;
+    }
+
+    async function stopRecording() {
+        recorder.stop();
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        stream.getTracks().forEach(track => track.stop());
+        console.log(chunks)
+        setTimeout(async () => {
+            blob = new Blob(chunks, {type: getAudioType()});
+            chunks = [];
+            const audio = document.querySelector('audio');
+
+            const base64StringObject = await blob.arrayBuffer();
+            const base64String = btoa(String.fromCharCode(...new Uint8Array(base64StringObject)));
 
 
-        function getAudioType() {
-            document.querySelector('#debug-test').innerHTML = JSON.stringify(recorder.mimeType, null, 2);
-            const mimeType = recorder.mimeType;
-            return mimeType
-        }
-    </script>
+            audio.src = URL.createObjectURL(blob);
+            audio.load();
+            audio.play();
+            console.log("Recording stopped");
+        }, 1000)
+    }
+
+
+    function getAudioType() {
+        document.querySelector('#debug-test').innerHTML = JSON.stringify(recorder.mimeType, null, 2);
+        const mimeType = recorder.mimeType;
+        return mimeType
+    }
+</script>
 
 
 </html>
