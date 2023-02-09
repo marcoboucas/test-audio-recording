@@ -36,8 +36,10 @@
 
     <button id="start-button" onclick="startRecording()">Start</button>
     <button id="stop-button" disabled="true" onclick="stopRecording()">Stop</button>
+    <br />
     <audio id="audio" controls></audio>
     <pre id="debug"></pre>
+    <pre id="debug-test"></pre>
 </body>
 
 <script>
@@ -95,6 +97,7 @@
 
 
     function getAudioType() {
+        document.querySelector('#debug-test').innerHTML = JSON.stringify(recorder.mimeType, null, 2);
         const mimeType = recorder.mimeType;
         if (mimeType === 'audio/webm') {
             return 'audio/webm;codecs=opus';
