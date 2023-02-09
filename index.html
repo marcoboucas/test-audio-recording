@@ -99,13 +99,7 @@
     function getAudioType() {
         document.querySelector('#debug-test').innerHTML = JSON.stringify(recorder.mimeType, null, 2);
         const mimeType = recorder.mimeType;
-        if (mimeType === 'audio/webm') {
-            return 'audio/webm;codecs=opus';
-        }
-        if (mimeType === 'audio/ogg') {
-            return 'audio/ogg;codecs=opus';
-        }
-        return 'audio/wav';
+        return mimeType
     }
 </script>
 
